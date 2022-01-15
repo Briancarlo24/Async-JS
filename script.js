@@ -42,4 +42,4 @@ const getCountryData = function (countryName) {
 
 getCountryData('Philippines');
 getCountryData('usa');
-// getCountryData('portugal');
+getCountryData('portugal');
