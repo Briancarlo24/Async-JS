@@ -41,8 +41,11 @@ body {
   font-size: 1.8rem;
   width: 30rem;
   border-radius: 0.7rem;
-  margin: 0 3rem;
   /* overflow: hidden; */
+}
+
+.country:first-child {
+  margin-right: 3rem;
 }
 
 .neighbour::before {
@@ -106,6 +109,7 @@ body {
   color: white;
   background-color: orangered;
   cursor: pointer;
+  margin-top: 3rem;
 }
 
 .images {
