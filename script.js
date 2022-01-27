@@ -29,7 +29,7 @@ const renderCountry = function (data, className = '') {
             </div>
             </article>`;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  // countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 
 /*
@@ -81,12 +81,9 @@ const getJSON = function (url, errorMsg = 'Something went wrong') {
 
 const getCountryAndNeighbour = function (countryName) {
   // get Country 1
-  getJSON(
-    `https://restcountries.com/v3.1/name/${countryName}`,
-    'Country not found'
-  )
+  getJSON(`https://restcountries.com/v3.1/name/${countryName}`)
     .then(data => {
-      renderCountry(data[0]);
+      renderCountry(data);
       const neighbour = data[0].borders;
 
       if (!neighbour) throw new Error('No neighbour found!');
@@ -107,6 +104,30 @@ const getCountryAndNeighbour = function (countryName) {
     });
 };
 
+//////////////////////CONSUMING PROMISES WITH ASYNC AWAIT/////////////////////////
+const whereAmI2 = async function () {
+  // Geolocatio
+  const pos = await getPosition();
+  const { latitude: lat, longitude: lng } = pos.coords;
+
+  // Reverse Geocoding
+  const resGeo = await fetch(
+    `https://geocode.xyz/${lat},${lng}?geoit=json&auth=152395983122352e15965452x23073`
+  );
+  const dataGeo = await resGeo.json();
+  console.log(dataGeo);
+
+  // Country Data
+  const res = await fetch(
+    `https://restcountries.com/v3.1/name/${dataGeo.country}`
+  );
+  const data = await res.json();
+  console.log(data[0]);
+
+  renderCountry(data[0]);
+};
+
+/*
 const whereAmI = function () {
   getPosition()
     .then(pos => {
@@ -137,15 +158,15 @@ const whereAmI = function () {
       console.log(`${err.message}`);
     });
 };
+*/
 
-btn.addEventListener('click', whereAmI);
+btn.addEventListener('click', whereAmI2);
 // getCountryAndNeighbour('philippines');
 // getCountryAndNeighbour('usa');
 // whereAmI(52.508, 13.381);
 // whereAmI(19.037, 72.873);
 // whereAmI(-33.933, 18.474);
 // getPosition().then(pos => console.log(pos));
-// });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////THE EVENT LOOP PRACTICE//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
