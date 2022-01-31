@@ -2,6 +2,7 @@
 
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
+const dataStorage = [];
 
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('beforeend', msg);
@@ -117,9 +118,10 @@ const whereAmI2 = async function () {
     );
     if (!resGeo.ok) throw new Error('Problem getting location data ');
     const dataGeo = await resGeo.json();
+    dataStorage.push(dataGeo);
 
     // Set to Local Storage
-    localStorage.setItem('locations', JSON.stringify(dataGeo));
+    localStorage.setItem('locations', JSON.stringify(dataStorage));
 
     // Get local storage and print to console
     const storageData = JSON.parse(localStorage.getItem('locations'));
