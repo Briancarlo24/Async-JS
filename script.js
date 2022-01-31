@@ -106,26 +106,46 @@ const getCountryAndNeighbour = function (countryName) {
 
 //////////////////////CONSUMING PROMISES WITH ASYNC AWAIT/////////////////////////
 const whereAmI2 = async function () {
-  // Geolocatio
-  const pos = await getPosition();
-  const { latitude: lat, longitude: lng } = pos.coords;
+  try {
+    // Geolocatio
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
 
-  // Reverse Geocoding
-  const resGeo = await fetch(
-    `https://geocode.xyz/${lat},${lng}?geoit=json&auth=152395983122352e15965452x23073`
-  );
-  const dataGeo = await resGeo.json();
-  console.log(dataGeo);
+    // Reverse Geocoding
+    const resGeo = await fetch(
+      `https://geocode.xyz/${lat},${lng}?geoit=json&auth=152395983122352e15965452x23073`
+    );
+    if (!resGeo.ok) throw new Error('Problem getting location data ');
+    const dataGeo = await resGeo.json();
+    console.log(dataGeo);
 
-  // Country Data
-  const res = await fetch(
-    `https://restcountries.com/v3.1/name/${dataGeo.country}`
-  );
-  const data = await res.json();
-  console.log(data[0]);
+    localStorage.setItem('locations', JSON.stringify(dataGeo));
 
-  renderCountry(data[0]);
+    // Country Data
+    const res = await fetch(
+      `https://restcountries.com/v3.1/name/${dataGeo.country}`
+    );
+    if (!res.ok) throw new Error('Problem getting location data ');
+    const data = await res.json();
+    // console.log(data[0]);
+
+    renderCountry(data[0]);
+
+    return `You are in ${dataGeo.city}, ${dataGeo.country}`;
+  } catch (err) {
+    renderError(`Something went wrong :( ${err.message})`);
+
+    throw err;
+  }
 };
+
+btn.addEventListener('click', whereAmI2);
+// getCountryAndNeighbour('philippines');
+// getCountryAndNeighbour('usa');
+// whereAmI(52.508, 13.381);
+// whereAmI(19.037, 72.873);
+// whereAmI(-33.933, 18.474);
+// getPosition().then(pos => console.log(pos));
 
 /*
 const whereAmI = function () {
@@ -159,14 +179,6 @@ const whereAmI = function () {
     });
 };
 */
-
-btn.addEventListener('click', whereAmI2);
-// getCountryAndNeighbour('philippines');
-// getCountryAndNeighbour('usa');
-// whereAmI(52.508, 13.381);
-// whereAmI(19.037, 72.873);
-// whereAmI(-33.933, 18.474);
-// getPosition().then(pos => console.log(pos));
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////THE EVENT LOOP PRACTICE//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -212,4 +224,91 @@ wait(2)
     return wait(1);
   })
   .then(() => console.log('I waited for 1 second'));
+*/
+
+/*
+// Using IIFE async await
+(async function () {
+  try {
+    console.log('1: Will get location');
+    const city = await whereAmI2();
+    console.log(city);
+  } catch (err) {
+    console.log(err);
+  } 
+    console.log('3: Finished Getting Location');
+})();
+*/
+
+/*
+const get3Countrues = async function (c1, c2, c3) {
+  try {
+    // const [data1] = await getJSON(`https://restcountries.com/v3.1/name/${c1}`);
+    // const [data2] = await getJSON(`https://restcountries.com/v3.1/name/${c2}`);
+    // const [data3] = await getJSON(`https://restcountries.com/v3.1/name/${c3}`);
+
+    // DATA WILL LOAD AT THE SAME TIME
+    const data = await Promise.all([
+      getJSON(`https://restcountries.com/v3.1/name/${c1}`),
+      getJSON(`https://restcountries.com/v3.1/name/${c2}`),
+      getJSON(`https://restcountries.com/v3.1/name/${c3}`),
+    ]);
+    console.log(data.map(d => d[0].capital));
+  } catch (err) {
+    console.error(err);
+  }
+};
+get3Countrues('portugal', 'canada', 'philippines');
+*/
+
+// Promise.race - returns the fastest promise loaded
+/*
+(async function () {
+  const res = await Promise.race([
+    getJSON(`https://restcountries.com/v3.1/name/italy`),
+    getJSON(`https://restcountries.com/v3.1/name/egypt`),
+    getJSON(`https://restcountries.com/v3.1/name/mexico`),
+  ]);
+  console.log(res[0]);
+})();
+
+const timeout = function (sec) {
+  return new Promise(function (_, reject) {
+    setTimeout(function () {
+      reject(new Error('Request took too long!'));
+    }, sec * 1000);
+  });
+};
+
+Promise.race([
+  getJSON(`https://restcountries.com/v3.1/name/philippines`),
+  timeout(5),
+])
+  .then(res => console.log(res[0]))
+  .catch(err => console.error(err));
+
+// Promise.allSettled - return all the results of all Promises
+Promise.allSettled([
+  Promise.resolve('Success'),
+  Promise.reject('Error'),
+  Promise.resolve('Another Success'),
+]).then(res => console.log(res));
+
+// Will short circute if there is one error.
+Promise.all([
+  Promise.resolve('Success'),
+  Promise.reject('Error'),
+  Promise.resolve('Another Success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
+
+// Promise.any - return the first fullfilled Promise. Ignore rejected promises
+Promise.any([
+  Promise.resolve('Success'),
+  Promise.reject('Error'),
+  Promise.resolve('Another Success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
 */
