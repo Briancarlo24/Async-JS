@@ -117,9 +117,13 @@ const whereAmI2 = async function () {
     );
     if (!resGeo.ok) throw new Error('Problem getting location data ');
     const dataGeo = await resGeo.json();
-    console.log(dataGeo);
 
+    // Set to Local Storage
     localStorage.setItem('locations', JSON.stringify(dataGeo));
+
+    // Get local storage and print to console
+    const storageData = JSON.parse(localStorage.getItem('locations'));
+    console.log(storageData);
 
     // Country Data
     const res = await fetch(
