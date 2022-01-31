@@ -160,7 +160,6 @@ function getLocalStorage() {
   dataStorage.forEach(ds => {
     console.log(ds);
   });
-  console.log(dataStorage);
 }
 
 btn.addEventListener('click', whereAmI2);
