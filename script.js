@@ -2,7 +2,7 @@
 
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
-const dataStorage = [];
+let dataStorage = [];
 
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('beforeend', msg);
@@ -32,7 +32,6 @@ const renderCountry = function (data, className = '') {
   countriesContainer.insertAdjacentHTML('beforeend', html);
   countriesContainer.style.opacity = 1;
 };
-
 /*
 const whereAmI = function (lat, lng) {
   fetch(
@@ -104,6 +103,7 @@ const getCountryAndNeighbour = function (countryName) {
       countriesContainer.style.opacity = 1;
     });
 };
+getLocalStorage();
 
 //////////////////////CONSUMING PROMISES WITH ASYNC AWAIT/////////////////////////
 const whereAmI2 = async function () {
@@ -118,14 +118,10 @@ const whereAmI2 = async function () {
     );
     if (!resGeo.ok) throw new Error('Problem getting location data ');
     const dataGeo = await resGeo.json();
+
     dataStorage.push(dataGeo);
-
-    // Set to Local Storage
-    localStorage.setItem('locations', JSON.stringify(dataStorage));
-
-    // Get local storage and print to console
-    const storageData = JSON.parse(localStorage.getItem('locations'));
-    console.log(storageData);
+    setLocalStorage();
+    console.log(dataStorage);
 
     // Country Data
     const res = await fetch(
@@ -144,6 +140,28 @@ const whereAmI2 = async function () {
     throw err;
   }
 };
+
+function setLocalStorage() {
+  // Set to Local Storage
+  localStorage.setItem('locations', JSON.stringify(dataStorage));
+}
+
+function getLocalStorage() {
+  // Get local storage and print to console
+  const getData = JSON.parse(localStorage.getItem('locations'));
+  console.log(getData);
+
+  // If there's no data. simply return
+  if (!getData) return;
+
+  // restores the data
+  dataStorage = getData;
+
+  dataStorage.forEach(ds => {
+    console.log(ds);
+  });
+  console.log(dataStorage);
+}
 
 btn.addEventListener('click', whereAmI2);
 // getCountryAndNeighbour('philippines');
